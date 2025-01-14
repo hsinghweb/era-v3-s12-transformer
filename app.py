@@ -24,9 +24,34 @@ def load_model():
     config = GPTConfig()
     model = GPT(config)
     
-    # Load the trained weights with weights_only=True
+    # Load the trained weights
     checkpoint = torch.load('checkpoints/final_model.pt', map_location=device, weights_only=True)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    # Handle pruned weights
+    state_dict = checkpoint['model_state_dict']
+    new_state_dict = {}
+    
+    for key in model.state_dict().keys():
+        if key.endswith('.weight'):
+            # Check if this is a pruned weight
+            orig_key = key[:-7] + '.weight_orig' if key.endswith('.weight') else key
+            mask_key = key[:-7] + '.weight_mask' if key.endswith('.weight') else key
+            
+            if orig_key in state_dict and mask_key in state_dict:
+                # Reconstruct the pruned weight
+                new_state_dict[key] = state_dict[orig_key] * state_dict[mask_key]
+            else:
+                # Use the weight as is
+                new_state_dict[key] = state_dict[key] if key in state_dict else model.state_dict()[key]
+        else:
+            # Copy non-weight parameters as is
+            new_state_dict[key] = state_dict[key] if key in state_dict else model.state_dict()[key]
+    
+    # Load the processed state dict
+    model.load_state_dict(new_state_dict)
+    
+    # Convert back to float32 for inference
+    model = model.float()
     model.to(device)
     model.eval()
     

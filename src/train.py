@@ -3,6 +3,7 @@ from config.model_config import GPTConfig
 from models.gpt import GPT
 from data.dataloader import DataLoaderLite
 from utils.device_utils import get_device, set_seed, save_model
+from torch.nn.utils import prune
 
 def train():
     # Setup
@@ -26,6 +27,18 @@ def train():
     
     # Train model
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    
+    # Apply pruning
+    parameters_to_prune = (
+        (model.transformer.h[0].mlp.c_fc, 'weight'),
+        (model.transformer.h[0].mlp.c_proj, 'weight'),
+        # Add more layers as needed
+    )
+    prune.global_unstructured(
+        parameters_to_prune,
+        pruning_method=prune.L1Unstructured,
+        amount=0.3  # Prune 30% of connections
+    )
     
     for epoch in range(num_epochs):
         x, y = train_loader.next_batch()

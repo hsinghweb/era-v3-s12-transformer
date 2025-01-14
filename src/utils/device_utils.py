@@ -15,12 +15,19 @@ def set_seed(seed=1337):
 
 def save_model(model, optimizer, loss, epoch, path='checkpoints/model.pt'):
     os.makedirs('checkpoints', exist_ok=True)
+    
+    # Convert model to half precision
+    model_to_save = model.half()
+    
+    # Save in half precision
     torch.save({
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
+        'model_state_dict': model_to_save.state_dict(),
         'loss': loss,
         'epoch': epoch
-    }, path)
+    }, path, _use_new_zipfile_serialization=False)
+    
+    # Convert back to original precision
+    model.float()
     print(f"Model saved to {path}")
 
 def load_model(model, optimizer=None, path='checkpoints/model.pt'):
