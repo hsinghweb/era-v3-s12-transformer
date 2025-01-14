@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from .block import Block
+from ..config.model_config import GPTConfig
 
 class GPT(nn.Module):
     def __init__(self, config):
