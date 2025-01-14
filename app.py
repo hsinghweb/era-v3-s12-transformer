@@ -96,7 +96,7 @@ model, device = load_model()
 
 # Input form
 prompt = st.text_area("Enter your prompt:", "Once upon a time")
-max_length = st.slider("Predict additional text of length:", min_value=10, max_value=100, value=10)
+max_length = st.slider("Predict additional text of length:", min_value=1, max_value=50, value=5)
 num_sequences = st.slider("Number of sequences to generate:", 1, 5, 1)
 
 if st.button("Generate"):
