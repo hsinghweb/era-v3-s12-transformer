@@ -302,7 +302,7 @@ Training completed! Best loss: 0.099605
 
 ```
 
-Sample Images from Hugging Face Spaces
+# Sample Images from Hugging Face Spaces
 
 ![Sample Image 1](sample_1.png)
 ![Sample Image 2](sample_2.png)
