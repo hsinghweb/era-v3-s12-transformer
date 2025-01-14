@@ -13,9 +13,7 @@ def set_seed(seed=1337):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
 
-def save_model(model, optimizer, loss, epoch, path='checkpoints/model.pt'):
-    os.makedirs('checkpoints', exist_ok=True)
-    
+def save_model(model, optimizer, loss, epoch, path='model.pt'):
     # Convert model to half precision
     model_to_save = model.half()
     
@@ -30,7 +28,7 @@ def save_model(model, optimizer, loss, epoch, path='checkpoints/model.pt'):
     model.float()
     print(f"Model saved to {path}")
 
-def load_model(model, optimizer=None, path='checkpoints/model.pt'):
+def load_model(model, optimizer=None, path='model.pt'):
     if os.path.exists(path):
         checkpoint = torch.load(path, weights_only=True)
         model.load_state_dict(checkpoint['model_state_dict'])

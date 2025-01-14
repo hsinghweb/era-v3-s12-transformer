@@ -65,3 +65,11 @@ coverage.xml
 .mypy_cache/
 .dmypy.json
 dmypy.json 
+
+# Model files in root
+model.pt
+*.pt
+*.pth
+
+# Remove checkpoints entry since we're not using that folder
+# checkpoints/ 

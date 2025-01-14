@@ -24,8 +24,8 @@ def load_model():
     config = GPTConfig()
     model = GPT(config)
     
-    # Load the trained weights
-    checkpoint = torch.load('checkpoints/final_model.pt', map_location=device, weights_only=True)
+    # Load the trained weights from root directory
+    checkpoint = torch.load('model.pt', map_location=device, weights_only=True)
     
     # Handle pruned weights
     state_dict = checkpoint['model_state_dict']

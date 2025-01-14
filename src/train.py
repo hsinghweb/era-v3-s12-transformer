@@ -56,7 +56,7 @@ def train():
             save_model(model, optimizer, loss.item(), epoch + 1)
     
     # Save final model
-    save_model(model, optimizer, loss.item(), num_epochs, 'checkpoints/final_model.pt')
+    save_model(model, optimizer, loss.item(), num_epochs, 'model.pt')
     print("Training completed!")
 
 if __name__ == "__main__":
