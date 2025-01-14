@@ -114,9 +114,9 @@ def train():
             print("Loss hasn't improved for several epochs. Early stopping.")
             break
         
-        # Save checkpoint every 20 epochs
+        # Save checkpoint every 20 epochs (rewrite the same file)
         if (epoch + 1) % 20 == 0:
-            save_model(model, optimizer, avg_loss, epoch, f'model_checkpoint_{epoch+1}.pt')
+            save_model(model, optimizer, avg_loss, epoch, 'model.pt')  # Changed to use same filename
 
     print(f"Training completed! Best loss: {best_loss:.6f}")
 
