@@ -70,9 +70,8 @@ def get_user_input():
     print("1. Train model")
     print("2. Generate text")
     print("3. Train and generate")
-    print("4. Export to Hugging Face")
-    print("5. Exit")
-    choice = input("Enter your choice (1-5): ")
+    print("4. Exit")
+    choice = input("Enter your choice (1-4): ")
     return choice
 
 def main():
@@ -133,10 +132,6 @@ def main():
             )
             
         elif choice == '4':
-            output_dir = input("Enter output directory name (default: hf_model): ") or "hf_model"
-            export_to_huggingface(model, output_dir)
-            
-        elif choice == '5':
             print("\nExiting program...")
             break
             

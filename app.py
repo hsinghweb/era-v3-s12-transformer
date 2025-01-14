@@ -1,6 +1,12 @@
 import streamlit as st
 import torch
 import tiktoken
+import sys
+import os
+
+# Add the project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.config.model_config import GPTConfig
 from src.models.gpt import GPT
 from src.utils.device_utils import get_device

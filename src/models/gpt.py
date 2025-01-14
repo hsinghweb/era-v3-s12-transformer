@@ -2,7 +2,13 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from .block import Block
-from config.model_config import GPTConfig
+import sys
+import os
+
+# Add the project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from src.config.model_config import GPTConfig
 
 class GPT(nn.Module):
     def __init__(self, config):
