@@ -3,6 +3,10 @@ import torch
 import tiktoken
 import sys
 import os
+import warnings
+
+# Suppress specific warning
+warnings.filterwarnings('ignore', message='Examining the path of torch.classes')
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -17,8 +21,8 @@ def load_model():
     config = GPTConfig()
     model = GPT(config)
     
-    # Load the trained weights
-    checkpoint = torch.load('checkpoints/final_model.pt', map_location=device)
+    # Load the trained weights with weights_only=True
+    checkpoint = torch.load('checkpoints/final_model.pt', map_location=device, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.to(device)
     model.eval()

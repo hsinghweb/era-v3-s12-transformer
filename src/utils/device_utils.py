@@ -25,9 +25,9 @@ def save_model(model, optimizer, loss, epoch, path='checkpoints/model.pt'):
 
 def load_model(model, optimizer=None, path='checkpoints/model.pt'):
     if os.path.exists(path):
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, weights_only=True)
         model.load_state_dict(checkpoint['model_state_dict'])
-        if optimizer is not None:
+        if optimizer is not None and 'optimizer_state_dict' in checkpoint:
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        return checkpoint['epoch'], checkpoint['loss']
+        return checkpoint.get('epoch', 0), checkpoint.get('loss', None)
     return 0, None 
