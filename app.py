@@ -3,10 +3,13 @@ import torch
 import tiktoken
 import sys
 import os
+import logging
 import warnings
 
-# Suppress specific warning
-warnings.filterwarnings('ignore', message='Examining the path of torch.classes')
+# Configure logging and warnings
+logging.getLogger('streamlit').setLevel(logging.ERROR)
+warnings.filterwarnings('ignore', message='.*torch.classes.*')
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -35,14 +38,21 @@ def generate_text(model, prompt, max_length=100, num_return_sequences=1, device=
     x = torch.tensor(input_tokens).unsqueeze(0).repeat(num_return_sequences, 1)
     x = x.to(device)
     
+    # Calculate final length (input length + requested additional tokens)
+    input_length = x.size(1)
+    target_length = input_length + max_length
+    
     # Generate text
     with torch.no_grad():
-        while x.size(1) < max_length:
+        while x.size(1) < target_length:
             logits = model(x)[0]
             next_token_logits = logits[:, -1, :]
             probs = torch.softmax(next_token_logits, dim=-1)
             next_token = torch.multinomial(probs, num_samples=1)
             x = torch.cat((x, next_token), dim=1)
+    
+    # Print token information once before generating sequences
+    st.text(f"Size of Input tokens: {input_length}, Additional tokens to be predicted: {max_length}, Total tokens to be generated: {x.size(1)}")
     
     # Decode generated sequences
     generated_texts = []
@@ -61,7 +71,7 @@ model, device = load_model()
 
 # Input form
 prompt = st.text_area("Enter your prompt:", "Once upon a time")
-max_length = st.slider("Maximum length:", 10, 500, 100)
+max_length = st.slider("Predict additional text of length:", min_value=10, max_value=100, value=10)
 num_sequences = st.slider("Number of sequences to generate:", 1, 5, 1)
 
 if st.button("Generate"):
@@ -76,5 +86,5 @@ if st.button("Generate"):
         
         # Display results
         for i, text in enumerate(generated_texts, 1):
-            st.write(f"\nGeneration {i}:")
+            st.write(f"\nSequence {i}:")
             st.write(text) 
