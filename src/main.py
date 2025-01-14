@@ -4,12 +4,15 @@ import tiktoken
 from config.model_config import GPTConfig
 from models.gpt import GPT
 from data.dataloader import DataLoaderLite
-from utils.device_utils import get_device, set_seed
+from utils.device_utils import get_device, set_seed, save_model, load_model
 
-def train_model(model, train_loader, device, num_epochs=50, learning_rate=3e-4):
+def train_model(model, train_loader, device, num_epochs=50, learning_rate=3e-4, save_path='checkpoints/model.pt'):
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     
-    for i in range(num_epochs):
+    # Load previous checkpoint if exists
+    start_epoch, prev_loss = load_model(model, optimizer, save_path)
+    
+    for i in range(start_epoch, num_epochs):
         x, y = train_loader.next_batch()
         x, y = x.to(device), y.to(device)
         
@@ -19,7 +22,13 @@ def train_model(model, train_loader, device, num_epochs=50, learning_rate=3e-4):
         optimizer.step()
         
         print(f'step {i}, loss: {loss.item()}')
+        
+        # Save checkpoint every 10 epochs
+        if (i + 1) % 10 == 0:
+            save_model(model, optimizer, loss.item(), i + 1, save_path)
     
+    # Save final model
+    save_model(model, optimizer, loss.item(), num_epochs, save_path)
     return loss
 
 def generate_text(model, input_text, tokenizer, device, max_length=30, num_return_sequences=5):
@@ -61,8 +70,9 @@ def get_user_input():
     print("1. Train model")
     print("2. Generate text")
     print("3. Train and generate")
-    print("4. Exit")
-    choice = input("Enter your choice (1-4): ")
+    print("4. Export to Hugging Face")
+    print("5. Exit")
+    choice = input("Enter your choice (1-5): ")
     return choice
 
 def main():
@@ -123,6 +133,10 @@ def main():
             )
             
         elif choice == '4':
+            output_dir = input("Enter output directory name (default: hf_model): ") or "hf_model"
+            export_to_huggingface(model, output_dir)
+            
+        elif choice == '5':
             print("\nExiting program...")
             break
             
